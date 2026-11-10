@@ -1,0 +1,21 @@
+{
+  "Profile": { "Profile Information": { "ProfileMap": { "userName": "should_not_appear" } } },
+  "Direct Messages": { "Chat History": { "ChatHistory": { "Chat with friend": [ { "Date": "2026-10-01 10:00:00", "From": "friend", "Content": "private message" } ] } } },
+  "Activity": {
+    "Search History": { "SearchList": [ { "Date": "2026-10-01 09:00:00", "SearchTerm": "should_not_appear" } ] },
+    "Video Browsing History": {
+      "VideoList": [
+        { "Date": "2026-10-02 20:15:03", "Link": "https://www.tiktokv.com/share/video/7234567890123456789/" },
+        { "Date": "2026-10-02 20:14:40", "Link": "https://www.tiktokv.com/share/video/7234567890123456700/" },
+        { "Date": "2026-10-02 20:14:40", "Link": "https://www.tiktokv.com/share/video/7234567890123456700/" },
+        { "Date": "2026-10-02 20:16:00", "Link": "not a link" }
+      ]
+    },
+    "Favorite Videos": { "FavoriteVideoList": [ { "Date": "2026-09-01 08:00:00", "Link": "https://www.tiktokv.com/share/video/7000000000000000001/" } ] }
+  },
+  "Your Activity": {
+    "Watch History": {
+      "VideoList": [ { "Date": "2026-10-03 07:00:00", "Link": "https://www.tiktok.com/@someone/video/7300000000000000002" } ]
+    }
+  }
+}

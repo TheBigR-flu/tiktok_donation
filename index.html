@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Donate Your TikTok Watch History</title>
+<style>
+  :root { --bg:#fafaf7; --ink:#1d1d1b; --muted:#5f5f5a; --line:#ddddd5; --accent:#1f5f8b; --ok:#2e7d4f; --warn:#a14a1a; --card:#fff; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#151514; --ink:#ecece6; --muted:#a3a39b; --line:#33332f; --accent:#6aa9d6; --ok:#6cc08f; --warn:#e39a6a; --card:#1d1d1b; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 680px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  h2 { font-size: 1.1rem; margin: 0 0 8px; }
+  .sub { color: var(--muted); margin: 0 0 24px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px; margin-bottom: 16px; }
+  .id { font-size: 2rem; font-weight: 700; letter-spacing: .08em; font-variant-numeric: tabular-nums; }
+  input[type=text] { font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); width: 9ch; font-size: 1.3rem; letter-spacing: .08em; }
+  button, .btn { font: inherit; font-weight: 600; padding: 12px 20px; border-radius: 8px; border: 0; background: var(--accent); color: #fff; cursor: pointer; text-decoration: none; display: inline-block; }
+  button.link { background: none; color: var(--accent); padding: 0; font-weight: 500; text-decoration: underline; }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  .muted { color: var(--muted); font-size: .92rem; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); }
+  .big { font-size: 1.25rem; font-weight: 600; margin: 4px 0 12px; }
+  ol { padding-left: 1.2rem; } li { margin-bottom: 6px; }
+  .table-wrap { max-height: 320px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; margin: 12px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  th { position: sticky; top: 0; background: var(--card); }
+  tr.removed td { text-decoration: line-through; color: var(--muted); }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .hidden { display: none; }
+  progress { width: 100%; height: 10px; }
+  footer { color: var(--muted); font-size: .85rem; margin-top: 24px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Donate your TikTok watch history</h1>
+  <p class="sub">Algorithmic Attitudes study · Park Hill School District</p>
+  <p id="closed-banner" class="warn hidden" role="status"><b>This study is not open yet.</b> Donations will open after review by the Park Hill Science Fair IRB. Only test IDs (00000–00999) work right now.</p>
+
+  <section>
+    <h2>Your study ID</h2>
+    <div id="id-known" class="hidden">
+      <div class="id" id="sid-display"></div>
+      <p class="muted">Screenshot this or write it down. It's the only way to have your data removed later. Bookmark this page so you can come back.</p>
+    </div>
+    <div id="id-missing" class="hidden">
+      <p>Enter the 5-digit study ID from the end of your survey:</p>
+      <input type="text" id="sid-input" inputmode="numeric" autocomplete="off" aria-label="5-digit study ID">
+    </div>
+  </section>
+
+  <section id="step-request">
+    <h2>1. Get your file from TikTok</h2>
+    <p class="muted">Already requested it? Skip to step 2 once it's ready.</p>
+    <ol>
+      <li>In TikTok: Profile → ☰ menu → <b>Settings and privacy</b> → <b>Account</b> → <b>Download your data</b>.</li>
+      <li>Choose <b>TXT</b> or <b>JSON</b> (either works), then tap <b>Request data</b>.</li>
+      <li>When it's ready (a few hours to a few days), download it from the <b>Download data</b> tab and come back here.</li>
+    </ol>
+  </section>
+
+  <section id="step-select">
+    <h2>2. Select your file</h2>
+    <p class="muted">Your file stays on your device. This page keeps <b>only which videos you watched and when</b>. Messages, searches, contacts, location, and your username are never read or sent.</p>
+    <input type="file" id="file" accept=".zip,.json,.txt,application/zip,application/json,text/plain">
+    <p id="status" class="muted" role="status"></p>
+  </section>
+
+  <section id="step-send" class="hidden">
+    <h2>3. Send</h2>
+    <p class="big"><span id="count"></span> videos ready to send</p>
+    <p class="muted">Only video IDs and watch times, plus your study ID.</p>
+    <p id="raffle-note"><strong>After you tap Send, you'll go straight to the raffle</strong> for one of fifty $5 gift cards. The raffle is only for students who donate, and it isn't connected to your data.</p>
+    <div class="row">
+      <button id="send" disabled>Send and go to the raffle</button>
+      <button class="link" id="toggle-review" type="button">Review or remove videos</button>
+    </div>
+    <p id="send-note" class="muted"></p>
+    <div id="review" class="hidden">
+      <p class="muted">Tap any row to remove it. Removed rows won't be sent.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Watched at</th><th>Video ID</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="progress-wrap" class="hidden">
+      <progress id="progress" max="1" value="0"></progress>
+      <p id="progress-text" class="muted" role="status"></p>
+    </div>
+  </section>
+
+  <section id="done" class="hidden">
+    <h2 class="ok">Sent. Thank you!</h2>
+    <p>Your watch history was received. You can close the TikTok file.</p>
+    <div id="raffle-go" class="hidden">
+      <p>Taking you to the raffle… If nothing happens, tap the button.</p>
+      <p><a class="btn" id="raffle-link" rel="noopener">Enter the raffle →</a></p>
+    </div>
+    <p id="raffle-missing" class="warn hidden">The raffle link didn't load. Please email Ronan Waters at s62731@parkhill.k12.mo.us with the time you donated, and you'll be entered.</p>
+  </section>
+
+  <footer>
+    <p>Questions: Ronan Waters, s62731@parkhill.k12.mo.us · Adult sponsor Thomas Meyer, MeyerT@parkhill.k12.mo.us.</p>
+    <p>Need support? Call or text 988, or text HOME to 741741.</p>
+  </footer>
+</main>
+
+<!-- JSZip opens TikTok's .zip download in the browser. -->
+<script src="vendor/jszip.min.js"></script>
+<script src="extract.js"></script>
+<script>
+  // ---- Settings: fill these in before launch ----
+  const SEND_URL = "https://script.google.com/macros/s/AKfycbxLZOMnFzSzpSE-Dk8Uae64jXlysaLCQygtaowkaDLZjz32uKe-o-x3ZhdEI8ZT0fNl/exec"; // Apps Script web app URL
+  // The raffle link isn't stored here. The receiver hands it back only after the data is saved,
+  // so the raffle can't be reached without donating (see apps-script/Code.gs).
+  // Keep false until IRB approval. While false, only test IDs 00000–00999 can send.
+  // Set to true (here AND in apps-script/Code.gs) to open the study.
+  const COLLECTION_OPEN = false;
+  const ROWS_PER_REQUEST = 50000;
+  // -----------------------------------------------
+
+  const params = new URLSearchParams(location.search);
+  const ridRaw = params.get("rid") || "";
+  const rid = /^R_[A-Za-z0-9]{10,20}$/.test(ridRaw) ? ridRaw : "";
+  let sid = (params.get("sid") || "").replace(/\D/g, "").slice(0, 5);
+  let rows = [], removed = new Set(), reviewBuilt = false, sending = false;
+  // If sending stops partway, the next tap continues from the part that failed,
+  // so parts already saved aren't saved twice. Reset whenever what would be sent changes.
+  let resume = null;
+  const $ = (id) => document.getElementById(id);
+  const isTestId = (id) => /^00\d{3}$/.test(id);
+  if (!COLLECTION_OPEN) $("closed-banner").classList.remove("hidden");
+
+  if (sid.length === 5) { $("sid-display").textContent = sid; $("id-known").classList.remove("hidden"); }
+  else { $("id-missing").classList.remove("hidden"); }
+  $("sid-input").addEventListener("input", (e) => {
+    e.target.value = e.target.value.replace(/\D/g, "").slice(0, 5);
+    sid = e.target.value; resume = null; updateSend();
+  });
+
+  function setStatus(msg, cls) { $("status").textContent = msg; $("status").className = cls || "muted"; }
+
+  // Accepts TikTok's JSON or TXT export: a .zip, a .json, or a watch-history .txt.
+  // TXT is converted to the JSON structure, so both go through the same extraction.
+  // In a TXT zip, only watch/browsing-history files are opened.
+  async function readExport(file) {
+    const T = TikTokExtract;
+    if (/\.zip$/i.test(file.name) || file.type.includes("zip")) {
+      const zip = await JSZip.loadAsync(file);
+      const files = Object.values(zip.files).filter((f) => !f.dir);
+      const jsonEntry = files.find((f) => /\.json$/i.test(f.name));
+      if (jsonEntry) return JSON.parse(await jsonEntry.async("string"));
+      const txtEntries = files.filter((f) => T.isHistoryFile(f.name));
+      if (!txtEntries.length) throw new Error("No watch history file found inside the zip. Make sure it's the full TikTok download.");
+      const list = [];
+      for (const f of txtEntries) {
+        const items = T.txtToJson(await f.async("string")).Activity["Video Browsing History"].VideoList;
+        for (let i = 0; i < items.length; i++) list.push(items[i]);
+      }
+      return { Activity: { "Video Browsing History": { VideoList: list } } };
+    }
+    if (/\.txt$/i.test(file.name)) {
+      if (!T.isHistoryFile(file.name)) throw new Error("That text file isn't your watch history. Select the file named \"Watch History\" or \"Browsing History\", or the whole TikTok .zip.");
+      return T.txtToJson(await file.text());
+    }
+    return JSON.parse(await file.text());
+  }
+
+  $("file").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setStatus("Reading your file on this device…");
+    $("step-send").classList.add("hidden");
+    try {
+      const json = await readExport(file);
+      rows = TikTokExtract.extract(json);
+      removed = new Set(); reviewBuilt = false;
+      $("rows").textContent = ""; $("review").classList.add("hidden");
+      $("toggle-review").textContent = "Review or remove videos";
+      if (!rows.length) {
+        setStatus("No watch history found. Check that this is the full TikTok download (JSON or TXT).", "warn");
+        return;
+      }
+      setStatus("Done. Only video IDs and times were kept.", "ok");
+      updateCount();
+      $("step-send").classList.remove("hidden");
+      $("step-send").scrollIntoView({ behavior: "smooth" });
+    } catch (err) {
+      setStatus("Couldn't read that file: " + err.message, "warn");
+    }
+  });
+
+  // The review table is built only if the student opens it.
+  $("toggle-review").addEventListener("click", () => {
+    const open = $("review").classList.toggle("hidden") === false;
+    $("toggle-review").textContent = open ? "Hide list" : "Review or remove videos";
+    if (open && !reviewBuilt) buildTable();
+  });
+
+  function buildTable() {
+    const frag = document.createDocumentFragment();
+    rows.forEach((r, i) => {
+      const tr = document.createElement("tr");
+      tr.dataset.i = i; tr.style.cursor = "pointer"; tr.title = "Tap to remove";
+      if (removed.has(i)) tr.className = "removed";
+      const a = document.createElement("td"); a.textContent = r.watched_at;
+      const b = document.createElement("td"); b.textContent = r.video_id;
+      tr.append(a, b); frag.appendChild(tr);
+    });
+    $("rows").appendChild(frag);
+    reviewBuilt = true;
+  }
+
+  $("rows").addEventListener("click", (e) => {
+    if (sending) return;
+    const tr = e.target.closest("tr"); if (!tr) return;
+    const i = Number(tr.dataset.i);
+    if (removed.has(i)) { removed.delete(i); tr.className = ""; tr.title = "Tap to remove"; }
+    else { removed.add(i); tr.className = "removed"; tr.title = "Tap to keep"; }
+    updateCount();
+  });
+
+  function updateCount() {
+    resume = null;
+    const n = rows.length - removed.size;
+    $("count").textContent = n.toLocaleString();
+    updateSend();
+  }
+
+  function updateSend() {
+    const n = rows.length - removed.size;
+    const blocked = !COLLECTION_OPEN && sid.length === 5 && !isTestId(sid);
+    $("send").disabled = sending || sid.length !== 5 || n === 0 || blocked;
+    $("send-note").textContent = sid.length !== 5 ? "Enter your 5-digit study ID first."
+      : blocked ? "The study isn't open yet, so nothing can be sent. Please come back after it opens."
+      : n === 0 ? "All videos were removed, so there's nothing to send." : "";
+    $("send-note").className = "muted";
+  }
+
+  async function postChunk(body) {
+    // text/plain avoids a CORS preflight, which Apps Script can't answer.
+    const res = await fetch(SEND_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(body),
+    });
+    const out = await res.json();
+    if (!out.ok) throw new Error(out.error || "server error");
+    return out;
+  }
+
+  // Only accept a Qualtrics https link from the receiver.
+  const isRaffleUrl = (u) => typeof u === "string" && /^https:\/\/[a-z0-9.-]+\.qualtrics\.com\//i.test(u);
+
+  $("send").addEventListener("click", async () => {
+    if (!resume) {
+      const kept = rows.filter((_, i) => !removed.has(i)).map((r) => [r.video_id, r.watched_at]);
+      resume = { kept, parts: Math.ceil(kept.length / ROWS_PER_REQUEST), next: 0 };
+    }
+    const { kept, parts } = resume;
+    sending = true; updateSend();
+    $("toggle-review").disabled = true;
+    $("progress-wrap").classList.remove("hidden");
+    $("progress").max = parts; $("progress").value = resume.next;
+    let raffle = "";
+    try {
+      for (let p = resume.next; p < parts; p++) {
+        $("progress-text").textContent = "Sending " + (parts > 1 ? "part " + (p + 1) + " of " + parts : "") + "…";
+        const body = { sid, rid, part: p + 1, parts, rows: kept.slice(p * ROWS_PER_REQUEST, (p + 1) * ROWS_PER_REQUEST) };
+        let tries = 0;
+        for (;;) {
+          try { const out = await postChunk(body); if (out.raffle) raffle = out.raffle; break; }
+          catch (err) { if (++tries >= 3) throw err; await new Promise((r) => setTimeout(r, 1500 * tries)); }
+        }
+        $("progress").value = p + 1;
+        resume.next = p + 1;
+      }
+      ["step-request", "step-select", "step-send"].forEach((id) => $(id).classList.add("hidden"));
+      $("done").classList.remove("hidden");
+      $("done").scrollIntoView({ behavior: "smooth" });
+      if (isRaffleUrl(raffle)) {
+        $("raffle-link").href = raffle;
+        $("raffle-go").classList.remove("hidden");
+        setTimeout(() => location.assign(raffle), 1200);
+      } else {
+        $("raffle-missing").classList.remove("hidden");
+      }
+    } catch (err) {
+      sending = false; updateSend();
+      $("toggle-review").disabled = false;
+      $("progress-text").textContent = "";
+      $("send-note").textContent = "Sending didn't work (" + err.message + "). Check your connection and tap Send again. Your file is still on your device.";
+      $("send-note").className = "warn";
+    }
+  });
+</script>
+</body>
+</html>
